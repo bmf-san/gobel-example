@@ -1,0 +1,1 @@
+FROM --platform=linux/amd64 google/cadvisor:v0.33.0

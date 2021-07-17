@@ -1,0 +1,1 @@
+FROM --platform=linux/amd64 prom/mysqld-exporter:v0.12.1

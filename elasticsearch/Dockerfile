@@ -1,0 +1,1 @@
+FROM --platform=linux/amd64 docker.elastic.co/elasticsearch/elasticsearch:7.14.1

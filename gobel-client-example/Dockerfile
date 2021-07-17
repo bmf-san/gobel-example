@@ -1,0 +1,1 @@
+FROM --platform=linux/amd64 bmfsan/gobel-client-example:latest

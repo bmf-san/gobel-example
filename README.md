@@ -12,12 +12,14 @@ Both local environment and production environment are assumed to be operated wit
 - [gobel-example](https://github.com/bmf-san/gobel-example)
 - [gobel-ops-example](https://github.com/bmf-san/gobel-ops-example)
 
+// TODO: localとproductionがわかりやすいようにかく
+
 # Get started
 ## Docker Compose
 Work in `./docker-compose` directory.
 
 ### Create a network
-`docker network create --driver bridge gobel_link`
+`make docker-create-network`
 
 ### Edit files
 #### environtment files
@@ -52,18 +54,18 @@ elasticsearch.password: password // here
 ```
 
 ### Build containers
-```
+```sh
 make docker-compose-build
 ```
 
 ### Run containers
-```
+```sh
 make docker-compose-up
 ```
 
 or
 
-```
+```sh
 make docker-compose-up-d
 ```
 
@@ -78,6 +80,17 @@ make docker-compose-up-d
 | mysqld-exporter                    | http://localhost:9104/                   |
 | grafana                            | http://localhost:3000/                   |
 | kibana                             | http://0.0.0.0:5601/                     |
+
+// TODO: あとで調整
+# Run in Production
+See [gobel-ops-example](https://github.com/bmf-san/gobel-ops-example) for building infrastructure construction of the production environment.
+
+# Supplement
+// TODO: 
+- docker secretを使ったほうがよい
+- ダウンタイムについて
+- mysqlを永続化することについて
+
 
 # UI screenshots
 ## gobel-client-example
