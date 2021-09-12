@@ -3,17 +3,17 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets:
-        - gobel-prometheus:9090
+        - ${GOBEL_PROMETHEUS_CONTAINER_NAME}:${GOBEL_PROMETHEUS_CONTAINER_PORT}
   - job_name: 'cadvisor'
     static_configs:
       - targets:
-        - gobel-cadvisor:8090
+        - ${GOBEL_CADVISOR_CONTAINER_NAME}:${GOBEL_CADVISOR_CONTAINER_PORT}
   - job_name: 'node-exporter'
     static_configs:
       - targets:
-        - gobel-node-exporter:9100
+        - ${GOBEL_NODE_EXPORTER_CONTAINER_NAME}:${GOBEL_NODE_EXPORTER_CONTAINER_PORT}
   - job_name: 'mysqld-exporter'
     static_configs:
       - targets:
-        - gobel-mysqld-exporter:9104
+        - ${GOBEL_MYSQL_EXPORTER_CONTAINER_NAME}:${GOBEL_MYSQL_EXPORTER_CONTAINER_PORT}
 

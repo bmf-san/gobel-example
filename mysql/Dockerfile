@@ -1,5 +1,12 @@
-FROM --platform=linux/amd64 mysql:8.0.26
+ARG GOBEL_MYSQL_IMAGE_NAME
+ENV GOBEL_MYSQL_IMAGE_NAME=${GOBEL_MYSQL_IMAGE_NAME}
 
-ADD ./conf.d/my.cnf /etc/mysql/conf.d/my.cnf
+ARG GOBEL_MYSQL_IMAGE_TAG
+ENV GOBEL_MYSQL_IMAGE_TAG=${GOBEL_MYSQL_IMAGE_TAG}
+
+FROM --platform=linux/amd64 ${GOBEL_MYSQL_IMAGE_NAME}:${GOBEL_MYSQL_IMAGE_TAG}
+
+RUN apk del .gettext \
+    && envsubst < ./conf.d/my.cnf > /etc/mysql/conf.d/my.cnf
 
 CMD ["mysqld"]

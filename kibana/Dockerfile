@@ -1,1 +1,10 @@
-FROM --platform=linux/amd64 docker.elastic.co/kibana/kibana:7.7.1
+ARG GOBEL_KIBANA_IMAGE_NAME
+ENV GOBEL_KIBANA_IMAGE_NAME=${GOBEL_KIBANA_IMAGE_NAME}
+
+ARG GOBEL_KIBANA_IMAGE_TAG
+ENV GOBEL_KIBANA_IMAGE_TAG=${GOBEL_KIBANA_IMAGE_TAG}
+
+FROM --platform=linux/amd64 ${GOBEL_KIBANA_IMAGE_NAME}:${GOBEL_KIBANA_IMAGE_TAG}
+
+RUN apk del .gettext \
+    && envsubst < ./config/kibana.yml > /user/share/kibana/config/kibana.yml

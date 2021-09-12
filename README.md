@@ -12,8 +12,6 @@ Both local environment and production environment are assumed to be operated wit
 - [gobel-example](https://github.com/bmf-san/gobel-example)
 - [gobel-ops-example](https://github.com/bmf-san/gobel-ops-example)
 
-// TODO: localとproductionがわかりやすいようにかく
-
 # Get started
 ## Docker Compose
 Work in `./docker-compose` directory.
@@ -21,31 +19,13 @@ Work in `./docker-compose` directory.
 ### Create a network
 `make docker-create-network`
 
-### Edit files
-#### environtment files
-Copy each .env_example under the following directory and edit it as needed.
-
-#### config files
-##### fluent.conf
-`fluentd/config/fluent.conf`
-
-```
-    user elastic // here
-    password password // here
+// TODO: 
+### Env
+```sh
+cp .env.example .env
 ```
 
-##### kibana.yml
-`kibana/config/kibana.yml`
-
-```
-server.name: kibana
-server.host: "0"
-elasticsearch.hosts: [ "http://elasticsearch:9200" ]
-xpack.monitoring.ui.container.elasticsearch.enabled: true
-elasticsearch.username: admin // here
-elasticsearch.password: password // here
-```
-
+// TODO: In local env, you don't need these settings.
 ### Edit a /etc/hosts.
 ```
 127.0.0.1 gobel-api.local
@@ -81,16 +61,18 @@ make docker-compose-up-d
 | grafana                            | http://localhost:3000/                   |
 | kibana                             | http://0.0.0.0:5601/                     |
 
-// TODO: あとで調整
+// TODO: Fix later
 # Run in Production
 See [gobel-ops-example](https://github.com/bmf-san/gobel-ops-example) for building infrastructure construction of the production environment.
 
-# Supplement
-// TODO: 
-- docker secretを使ったほうがよい
-- ダウンタイムについて
-- mysqlを永続化することについて
+# Faker
+// TODO: Fix later
 
+# Supplement
+// TODO: Fix later
+- user docker secret is better maybe
+- about donwtime for building container
+- about mysql data volume persistence
 
 # UI screenshots
 ## gobel-client-example
