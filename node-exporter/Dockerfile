@@ -1,0 +1,1 @@
+FROM --platform=linux/amd64 prom/node-exporter:v1.0.0
