@@ -9,7 +9,7 @@ up=docker-compose up --no-deps -d
 
 .PHONY: Create a network if it not exists 
 docker-create-network: ## Create a network for docker.
-	docker network inspect gobel_link >/dev/null 2>&1 || docker network create --driver bridge gobel-link
+	docker network inspect gobel_link >/dev/null 2>&1 || docker network create --driver bridge gobel_link
 
 .PHONY: Build containers
 docker-compose-build: ## Build containers by docker compose.
