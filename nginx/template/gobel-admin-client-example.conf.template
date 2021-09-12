@@ -1,0 +1,14 @@
+server {
+    root         /var/www/html;
+    listen       ${GOBEL_NGINX_HOST_PORT};
+    server_name  ${GOBEL_NGINX_ADMIN_CLIENT_SERVER_NAME};
+    charset UTF-8;
+    access_log  /var/log/nginx/${GOBEL_NGINX_ADMIN_CLIENT_ACCESS_LOG_NAME}.log  ltsv;
+    error_log   /var/log/nginx/${GOBEL_NGINX_ADMIN_CLIENT_ERROR_LOG_NAME}.log;
+    
+    location / {
+        index index.html;
+        try_files $uri $uri/ /index.html;
+    }
+}
+
