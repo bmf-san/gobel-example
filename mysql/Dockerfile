@@ -1,5 +1,8 @@
-FROM --platform=linux/amd64 mysql:8.0.26
+ARG GOBEL_MYSQL_IMAGE_NAME=${GOBEL_MYSQL_IMAGE_NAME}
+ARG GOBEL_MYSQL_IMAGE_TAG=${GOBEL_MYSQL_IMAGE_TAG}
 
-ADD ./conf.d/my.cnf /etc/mysql/conf.d/my.cnf
+FROM --platform=linux/amd64 ${GOBEL_MYSQL_IMAGE_NAME}:${GOBEL_MYSQL_IMAGE_TAG}
 
-CMD ["mysqld"]
+# TODO: doesn't need
+# RUN mkdir /var/log/mysql \
+# 	&& chmod 777 /var/log/mysql

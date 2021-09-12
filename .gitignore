@@ -4,8 +4,11 @@
 .env
 
 # docker-compose
+elasticsearch/nodes
+
 mysql/data
 !/mysql/data/.gitkeep
+
 mysql/log
 !/mysql/log/.gitkeep
 

@@ -4,17 +4,17 @@ help:
 
 .DEFAULT_GOAL := help
 
-build=docker-compose build
-up=docker-compose up --no-deps -d
+build=docker-compose --env-file=.env build --no-cache
+up=docker-compose --env-file=.env up -d --no-deps
 
-.PHONY: Create a network if it not exists 
+.PHONY: docker-create-network
 docker-create-network: ## Create a network for docker.
 	docker network inspect gobel_link >/dev/null 2>&1 || docker network create --driver bridge gobel_link
 
-.PHONY: Build containers
+.PHONY: dockcer-compose-build
 docker-compose-build: ## Build containers by docker compose.
 	@$(build)
 
-.PHONY: Run containers with detach mode
+.PHONY: docker-compose-up
 docker-compose-up: ## Run containers by docker-compose.
 	@$(up)

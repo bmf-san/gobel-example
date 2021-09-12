@@ -1,3 +1,6 @@
-FROM --platform=linux/amd64 redis:latest
+ARG GOBEL_REDIS_IMAGE_NAME=${GOBEL_REDIS_IMAGE_NAME}
+ARG GOBEL_REDIS_IMAGE_TAG=${GOBEL_REDIS_IMAGE_TAG}
+
+FROM --platform=linux/amd64 ${GOBEL_REDIS_IMAGE_NAME}:${GOBEL_REDIS_IMAGE_TAG}
 
 CMD redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
