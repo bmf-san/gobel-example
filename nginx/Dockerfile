@@ -1,19 +1,49 @@
-FROM --platform=linux/amd64 bmfsan/gobel-admin-client-example:latest as build-stage
-
 ARG VUE_APP_API_ENDPOINT
 ENV VUE_APP_API_ENDPOINT=${VUE_APP_API_ENDPOINT}
 
+ARG GOBEL_ADMIN_CLIENT_IMAGE_NAME
+ENV GOBEL_ADMIN_CLIENT_IMAGE_NAME=${GOBEL_ADMIN_CLIENT_IMAGE_NAME}
+
+ARG GOBEL_ADMIN_CLIENT_IMAGE_TAG
+ENV GOBEL_ADMIN_CLIENT_IMAGE_TAG=${GOBEL_ADMIN_CLIENT_IMAGE_TAG}
+
+ARG GOBEL_ADMIN_CLIENT_PATH_TO_DIST
+ENV GOBEL_ADMIN_CLIENT_PATH_TO_DIST=${GOBEL_ADMIN_CLIENT_PATH_TO_DIST}
+
+ARG GOBEL_NGINX_IMAGE_NAME
+ENV GOBEL_NGINX_IMAGE_NAME=${GOBEL_NGINX_IMAGE_NAME}
+
+ARG GOBEL_NGINX_IMAGE_TAG
+ENV GOBEL_NGINX_IMAGE_TAG=${GOBEL_NGINX_IMAGE_TAG}
+
+ARG GOBEL_NGINX_ADMIN_CLIENT_ACCESS_LOG_NAME
+ENV GOBEL_NGINX_ADMIN_CLIENT_ACCESS_LOG_NAME=${GOBEL_NGINX_ADMIN_CLIENT_ACCESS_LOG_NAME}
+ARG GOBEL_NGINX_ADMIN_CLIENT_ERROR_LOG_NAME
+ENV GOBEL_NGINX_ADMIN_CLIENT_ERROR_LOG_NAME=${GOBEL_NGINX_ADMIN_CLIENT_ERROR_LOG_NAME}
+
+ARG GOBEL_NGINX_API_ACCESS_LOG_NAME
+ENV GOBEL_NGINX_API_ACCESS_LOG_NAME=${GOBEL_NGINX_API_ACCESS_LOG_NAME}
+ARG GOBEL_NGINX_API_ERROR_LOG_NAME
+ENV GOBEL_NGINX_API_ERROR_LOG_NAME=${GOBEL_NGINX_API_ERROR_LOG_NAME}
+
+ARG GOBEL_NGINX_CLIENT_ACCESS_LOG_NAME
+ENV GOBEL_NGINX_CLIENT_ACCESS_LOG_NAME=${GOBEL_NGINX_CLIENT_ACCESS_LOG_NAME}
+ARG GOBEL_NGINX_CLIENT_ERROR_LOG_NAME
+ENV GOBEL_NGINX_CLIENT_ERROR_LOG_NAME=${GOBEL_NGINX_CLIENT_ERROR_LOG_NAME}
+
+FROM --platform=linux/amd64 ${GOBEL_ADMIN_CLIENT_IMAGE_NAME}:${GOBEL_ADMIN_CLIENT_IMAGE_TAG} as build-stage
+
 RUN npm run prod-build
 
-FROM --platform=linux/amd64 nginx:1.19.0-alpine
+FROM --platform=linux/amd64 ${GOBEL_NGINX_IMAGE_NAME}:${GOBEL_NGINX_IMAGE_TAG}
 
-COPY --from=build-stage ./go/gobel-admin-client-example/app/dist ./var/www/html
+COPY --from=build-stage ${GOBEL_ADMIN_CLIENT_PATH_TO_DIST} ./var/www/html
 COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY ./conf.d/ /etc/nginx/conf.d
 
-RUN ln -sf /dev/stdout /var/log/nginx/access_gobel_api.log \
-    && ln -sf /dev/stderr /var/log/nginx/error_gobel_api.log \
-    && ln -sf /dev/stdout /var/log/nginx/access_gobel_admin.log \
-    && ln -sf /dev/stderr /var/log/nginx/error_gobel_admin.log \
-    && ln -sf /dev/stdout /var/log/nginx/access_gobel_client_example.log \
-    && ln -sf /dev/stderr /var/log/nginx/error_gobel_client_example.log 
+RUN ln -sf /dev/stdout /var/log/nginx/${GOBEL_NGINX_ADMIN_CLIENT_ACCESS_LOG_NAME}.log \
+    && ln -sf /dev/stderr /var/log/nginx/${GOBEL_NGINX_ADMIN_CLIENT_ERROR_LOG_NAME}.log \
+    && ln -sf /dev/stdout /var/log/nginx/${GOBEL_NGINX_API_ACCESS_LOG_NAME}.log \
+    && ln -sf /dev/stderr /var/log/nginx/${GOBEL_NGINX_API_ERROR_LOG_NAME}.log \
+    && ln -sf /dev/stdout /var/log/nginx/${GOBEL_NGINX_CLIENT_ACCESS_LOG_NAME}.log \
+    && ln -sf /dev/stderr /var/log/nginx/${GOBEL_NGINX_CLIENT_ERROR_LOG_NAME}.log 
