@@ -4,10 +4,10 @@
 .env
 
 # docker-compose
+elasticsearch/nodes
+
 mysql/data
 !/mysql/data/.gitkeep
-mysql/log
-!/mysql/log/.gitkeep
 
 redis/data
 !/redis/data/.gitkeep

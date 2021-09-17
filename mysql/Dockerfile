@@ -1,12 +1,7 @@
-ARG GOBEL_MYSQL_IMAGE_NAME
-ENV GOBEL_MYSQL_IMAGE_NAME=${GOBEL_MYSQL_IMAGE_NAME}
-
-ARG GOBEL_MYSQL_IMAGE_TAG
-ENV GOBEL_MYSQL_IMAGE_TAG=${GOBEL_MYSQL_IMAGE_TAG}
+ARG GOBEL_MYSQL_IMAGE_NAME=${GOBEL_MYSQL_IMAGE_NAME}
+ARG GOBEL_MYSQL_IMAGE_TAG=${GOBEL_MYSQL_IMAGE_TAG}
 
 FROM --platform=linux/amd64 ${GOBEL_MYSQL_IMAGE_NAME}:${GOBEL_MYSQL_IMAGE_TAG}
 
-RUN apk del .gettext \
-    && envsubst < ./conf.d/my.cnf > /etc/mysql/conf.d/my.cnf
-
-CMD ["mysqld"]
+RUN mkdir /var/log/mysql \
+	&& chmod 777 /var/log/mysql

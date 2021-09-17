@@ -28,9 +28,9 @@ cp .env.example .env
 // TODO: In local env, you don't need these settings.
 ### Edit a /etc/hosts.
 ```
-127.0.0.1 gobel-api.local
-127.0.0.1 gobel-client-example.local
-127.0.0.1 gobel-admin-client-example.local
+127.0.0.1 api.gobel.tk
+127.0.0.1 gobel.tk
+127.0.0.1 admin.gobel.tk
 ```
 
 ### Build containers

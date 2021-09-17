@@ -1,6 +1,6 @@
 server.name: kibana
 server.host: "0"
-elasticsearch.hosts: [ "http://${GOBEL_ELASTICSEARCH_CONTAINER_NAME}:${GOBEL_ELASTICSEARCH_CONTAINER_HOST}" ]
+elasticsearch.hosts: [ "http://${GOBEL_ELASTICSEARCH_CONTAINER_NAME}:${GOBEL_ELASTICSEARCH_CONTAINER_PORT}" ]
 xpack.monitoring.ui.container.elasticsearch.enabled: true
-elasticsearch.username: ${GOBEL_ELASTICSEARCH_USERNAME}
-elasticsearch.password: ${GOBEL_ELASTICSEARCH_PASSWORD}
+elasticsearch.username: ${GOBEL_ELASTICSEARCH_ELASTIC_USERNAME}
+elasticsearch.password: ${GOBEL_ELASTICSEARCH_ELASTIC_PASSWORD}

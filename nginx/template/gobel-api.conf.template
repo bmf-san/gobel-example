@@ -1,5 +1,5 @@
 server {
-    listen       ${GOBEL_NGINX_PROXY_PORT};
+    listen       ${GOBEL_NGINX_HOST_PORT};
     server_name  ${GOBEL_NGINX_API_SERVER_NAME};
     charset UTF-8;
     access_log  /var/log/nginx/${GOBEL_NGINX_API_ACCESS_LOG_NAME}.log  ltsv;
