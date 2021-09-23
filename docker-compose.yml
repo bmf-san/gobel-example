@@ -24,7 +24,7 @@ services:
       - gobel_link
     restart: always
     depends_on:
-      - fluentd
+      - logstash
   redis:
     container_name: "${GOBEL_REDIS_CONTAINER_NAME}"
     environment: 
@@ -42,25 +42,30 @@ services:
     networks:
       - gobel_link
     restart: always
+    logging:
+      driver: gelf
+      options: 
+        gelf-address: udp://localhost:${GOBEL_LOGSTASH_HOST_PORT}
+        tag: "${GOBEL_REDIS_LOGGING_TAG}"
     depends_on:
-      - fluentd
-  redis-insight:
-    container_name: "${GOBEL_REDIS_INSIGHT_CONTAINER_NAME}"
-    build:
-        context: "./redis-insight"
-        dockerfile: "Dockerfile"
-        args:
-          GOBEL_REDIS_INSIGHT_IMAGE_NAME: "${GOBEL_REDIS_INSIGHT_IMAGE_NAME}"
-          GOBEL_REDIS_INSIGHT_IMAGE_TAG: "${GOBEL_REDIS_INSIGHT_IMAGE_TAG}"
-    ports:
-      - "${GOBEL_REDIS_INSIGHT_HOST_PORT}:${GOBEL_REDIS_INSIGHT_CONTAINER_PORT}"
-    volumes:
-      - ./redis-insight/data:/var/lib/redis-insight
-    networks:
-      - gobel_link
-    restart: always
-    depends_on:
-      - fluentd
+      - logstash
+  # redis-insight:
+  #   container_name: "${GOBEL_REDIS_INSIGHT_CONTAINER_NAME}"
+  #   build:
+  #       context: "./redis-insight"
+  #       dockerfile: "Dockerfile"
+  #       args:
+  #         GOBEL_REDIS_INSIGHT_IMAGE_NAME: "${GOBEL_REDIS_INSIGHT_IMAGE_NAME}"
+  #         GOBEL_REDIS_INSIGHT_IMAGE_TAG: "${GOBEL_REDIS_INSIGHT_IMAGE_TAG}"
+  #   ports:
+  #     - "${GOBEL_REDIS_INSIGHT_HOST_PORT}:${GOBEL_REDIS_INSIGHT_CONTAINER_PORT}"
+  #   volumes:
+  #     - ./redis-insight/data:/var/lib/redis-insight
+  #   networks:
+  #     - gobel_link
+  #   restart: always
+  #   depends_on:
+  #     - logstash
   nginx:
     container_name: "${GOBEL_NGINX_CONTAINER_NAME}"
     environment: 
@@ -102,13 +107,12 @@ services:
       - gobel_link
     restart: always
     logging:
-      driver: "fluentd"
+      driver: "gelf"
       options:
-        fluentd-address: ${GOBEL_FLUENTD_ADDRESS}
-        fluentd-async-connect: "true"
+        gelf-address: udp://localhost:${GOBEL_LOGSTASH_HOST_PORT}
         tag: "${GOBEL_NGINX_LOGGING_TAG}"
     depends_on:
-      - fluentd
+      - logstash
   gobel-api:
     container_name: "${GOBEL_API_CONTAINER_NAME}"
     environment: 
@@ -140,15 +144,14 @@ services:
       - gobel_link
     restart: always
     logging:
-      driver: "fluentd"
+      driver: "gelf"
       options:
-        fluentd-address: ${GOBEL_FLUENTD_ADDRESS}
-        fluentd-async-connect: "true"
+        gelf-address: udp://localhost:${GOBEL_LOGSTASH_HOST_PORT}
         tag: "${GOBEL_API_LOGGING_TAG}"
     depends_on:
       - nginx
       - mysql
-      - fluentd
+      - logstash
   gobel-client-example:
     # TODO: api callできないぽい？？なんか通信不安定
     container_name: "${GOBEL_CLIENT_CONTAINER_NAME}"
@@ -171,148 +174,147 @@ services:
       - gobel_link
     restart: always
     logging:
-      driver: "fluentd"
+      driver: "gelf"
       options:
-        fluentd-address: ${GOBEL_FLUENTD_ADDRESS}
-        fluentd-async-connect: "true"
+        gelf-address: udp://localhost:${GOBEL_LOGSTASH_HOST_PORT}
         tag: "${GOBEL_CLIENT_LOGGING_TAG}"
     depends_on:
       - nginx
       - mysql
-      - fluentd
-  prometheus:
-    container_name: "${GOBEL_PROMETHEUS_CONTAINER_NAME}"
-    environment: 
-      - GOBEL_PROMETHEUS_IMAGE_NAME=${GOBEL_PROMETHEUS_IMAGE_NAME}
-      - GOBEL_PROMETHEUS_IMAGE_TAG=${GOBEL_PROMETHEUS_IMAGE_TAG}
-      - GOBEL_PROMETHEUS_CONTAINER_NAME=${GOBEL_PROMETHEUS_CONTAINER_NAME}
-      - GOBEL_PROMETHEUS_CONTAINER_PORT=${GOBEL_PROMETHEUS_CONTAINER_PORT}
-      - GOBEL_CADVISOR_CONTAINER_NAME=${GOBEL_CADVISOR_CONTAINER_NAME}
-      - GOBEL_CADVISOR_CONTAINER_PORT=${GOBEL_CADVISOR_CONTAINER_PORT}
-      - GOBEL_NODE_EXPORTER_CONTAINER_NAME=${GOBEL_NODE_EXPORTER_CONTAINER_NAME}
-      - GOBEL_NODE_EXPORTER_CONTAINER_PORT=${GOBEL_NODE_EXPORTER_CONTAINER_PORT}
-      - GOBEL_MYSQLD_EXPORTER_CONTAINER_NAME=${GOBEL_MYSQLD_EXPORTER_CONTAINER_NAME}
-      - GOBEL_MYSQLD_EXPORTER_CONTAINER_PORT=${GOBEL_MYSQLD_EXPORTER_CONTAINER_PORT}
-    build:
-      context: "./prometheus"
-      dockerfile: "Dockerfile"
-      args:
-        GOBEL_PROMETHEUS_IMAGE_NAME: "${GOBEL_PROMETHEUS_IMAGE_NAME}"
-        GOBEL_PROMETHEUS_IMAGE_TAG: "${GOBEL_PROMETHEUS_IMAGE_TAG}"
-        GOBEL_ALPINE_IMAGE_NAME: "${GOBEL_ALPINE_IMAGE_NAME}"
-        GOBEL_ALPINE_IMAGE_TAG: "${GOBEL_ALPINE_IMAGE_TAG}"
-    ports: 
-      - ${GOBEL_PROMETHEUS_HOST_PORT}:${GOBEL_PROMETHEUS_CONTAINER_PORT}
-    command:
-      - /bin/sh
-      - -c
-      - |
-        envsubst < /template/prometheus.yml.template > /etc/prometheus/prometheus.yml
-        /bin/prometheus \
-        --config.file=/etc/prometheus/prometheus.yml \
-        --storage.tsdb.path=/prometheus
-    networks: 
-      - gobel_link
-    restart: always
-  node-exporter:
-    container_name: "${GOBEL_NODE_EXPORTER_CONTAINER_NAME}"
-    environment: 
-      - GOBEL_NODE_EXPORTER_IMAGE_NAME=${GOBEL_NODE_EXPORTER_IMAGE_NAME}
-      - GOBEL_NODE_EXPORTER_IMAGE_TAG=${GOBEL_NODE_EXPORTER_IMAGE_TAG}
-    build:
-      context: "./node-exporter"
-      dockerfile: "Dockerfile"
-      args:
-        GOBEL_NODE_EXPORTER_IMAGE_NAME: "${GOBEL_NODE_EXPORTER_IMAGE_NAME}"
-        GOBEL_NODE_EXPORTER_IMAGE_TAG: "${GOBEL_NODE_EXPORTER_IMAGE_TAG}"
-    volumes:
-      - /proc:/host/proc
-      - /sys:/host/sys
-      - /:/rootfs
-    ports:
-      - ${GOBEL_NODE_EXPORTER_HOST_PORT}:${GOBEL_NODE_EXPORTER_CONTAINER_PORT}
-    command: 
-      - --path.procfs=/host/proc
-      - --path.sysfs=/host/sys
-      - --collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)
-    networks: 
-      - gobel_link
-    restart: always
-  mysqld-exporter:
-    container_name: "${GOBEL_MYSQLD_EXPORTER_CONTAINER_NAME}"
-    environment: 
-      - DATA_SOURCE_NAME=root:${GOBEL_MYSQL_ROOT_PASSWORD}@(${GOBEL_MYSQL_CONTAINER_NAME:${GOBEL_MYSQL_CONTAINER_PORT})
-    build:
-      context: "./mysqld-exporter"
-      dockerfile: "Dockerfile"
-      args:
-        GOBEL_MYSQLD_EXPORTER_IMAGE_NAME: "${GOBEL_MYSQLD_EXPORTER_IMAGE_NAME}"
-        GOBEL_MYSQLD_EXPORTER_IMAGE_TAG: "${GOBEL_MYSQLD_EXPORTER_IMAGE_TAG}"
-    ports:
-      - ${GOBEL_MYSQLD_EXPORTER_HOST_PORT}:${GOBEL_MYSQLD_EXPORTER_CONTAINER_PORT}
-    command: 
-      - --collect.global_status
-      - --collect.global_variables
-      - --collect.slave_status
-      - --collect.binlog_size
-      - --collect.info_schema.processlist
-      - --collect.info_schema.userstats
-      - --collect.info_schema.tables
-      - --collect.auto_increment.columns
-      - --collect.info_schema.tablestats
-      - --collect.perf_schema.file_events
-      - --collect.perf_schema.eventsstatements
-      - --collect.perf_schema.indexiowaits
-      - --collect.perf_schema.tableiowaits
-      - --collect.perf_schema.tablelocks
-      - --collect.perf_schema.eventswaits
-    networks: 
-      - gobel_link
-    restart: always
-  grafana:
-    container_name: "${GOBEL_GRAFANA_CONTAINER_NAME}"
-    environment: 
-      - GF_SECURITY_ADMIN_USER=${GOBEL_GF_SECURITY_ADMIN_USER}
-      - GF_SECURITY_ADMIN_PASSWORD=${GOBEL_GF_SECURITY_ADMIN_PASSWORD}
-      - GF_USERS_ALLOW_SIGN_UP="${GOBEL_GF_USERS_ALLOW_SIGN_UP}"
-      - GF_USERS_ALLOW_ORG_CREATE="${GOBEL_GF_USERS_ALLOW_ORG_CREATE}"
-      - DS_PROMETHEUS=${GOBEL_DS_PROMETHEUS}
-    build:
-      context: "./grafana"
-      dockerfile: "Dockerfile"
-      args:
-        GOBEL_GRAFANA_IMAGE_NAME: "${GOBEL_GRAFANA_IMAGE_NAME}"
-        GOBEL_GRAFANA_IMAGE_TAG: "${GOBEL_GRAFANA_IMAGE_TAG}"
-    volumes: 
-      - ./grafana/provisioning:/etc/grafana/provisioning
-    ports:
-      - ${GOBEL_GRAFANA_HOST_PORT}:${GOBEL_GRAFANA_CONTAINER_PORT}
-    networks: 
-      - gobel_link
-    restart: always
-  # # NOTE: This does not work on m1 Mac.
-  # # cf. https://github.com/google/cadvisor/issues/2763
-  cadvisor:
-    container_name: "${GOBEL_CADVISOR_CONTAINER_NAME}"
-    build:
-      context: "./cadvisor"
-      dockerfile: "Dockerfile"
-      args:
-        GOBEL_CADVISOR_IMAGE_NAME: "${GOBEL_CADVISOR_IMAGE_NAME}"
-        GOBEL_CADVISOR_IMAGE_TAG: "${GOBEL_CADVISOR_IMAGE_TAG}"
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker:/var/lib/docker:ro
-    privileged: true
-    ports:
-      - ${GOBEL_CADVISOR_HOST_PORT}:${GOBEL_CADVISOR_CONTAINER_PORT}
-    command:
-      - '-port=${GOBEL_CADVISOR_CONTAINER_PORT}'
-    networks: 
-      - gobel_link
-    restart: always
+      - logstash
+  # prometheus:
+  #   container_name: "${GOBEL_PROMETHEUS_CONTAINER_NAME}"
+  #   environment: 
+  #     - GOBEL_PROMETHEUS_IMAGE_NAME=${GOBEL_PROMETHEUS_IMAGE_NAME}
+  #     - GOBEL_PROMETHEUS_IMAGE_TAG=${GOBEL_PROMETHEUS_IMAGE_TAG}
+  #     - GOBEL_PROMETHEUS_CONTAINER_NAME=${GOBEL_PROMETHEUS_CONTAINER_NAME}
+  #     - GOBEL_PROMETHEUS_CONTAINER_PORT=${GOBEL_PROMETHEUS_CONTAINER_PORT}
+  #     - GOBEL_CADVISOR_CONTAINER_NAME=${GOBEL_CADVISOR_CONTAINER_NAME}
+  #     - GOBEL_CADVISOR_CONTAINER_PORT=${GOBEL_CADVISOR_CONTAINER_PORT}
+  #     - GOBEL_NODE_EXPORTER_CONTAINER_NAME=${GOBEL_NODE_EXPORTER_CONTAINER_NAME}
+  #     - GOBEL_NODE_EXPORTER_CONTAINER_PORT=${GOBEL_NODE_EXPORTER_CONTAINER_PORT}
+  #     - GOBEL_MYSQLD_EXPORTER_CONTAINER_NAME=${GOBEL_MYSQLD_EXPORTER_CONTAINER_NAME}
+  #     - GOBEL_MYSQLD_EXPORTER_CONTAINER_PORT=${GOBEL_MYSQLD_EXPORTER_CONTAINER_PORT}
+  #   build:
+  #     context: "./prometheus"
+  #     dockerfile: "Dockerfile"
+  #     args:
+  #       GOBEL_PROMETHEUS_IMAGE_NAME: "${GOBEL_PROMETHEUS_IMAGE_NAME}"
+  #       GOBEL_PROMETHEUS_IMAGE_TAG: "${GOBEL_PROMETHEUS_IMAGE_TAG}"
+  #       GOBEL_ALPINE_IMAGE_NAME: "${GOBEL_ALPINE_IMAGE_NAME}"
+  #       GOBEL_ALPINE_IMAGE_TAG: "${GOBEL_ALPINE_IMAGE_TAG}"
+  #   ports: 
+  #     - ${GOBEL_PROMETHEUS_HOST_PORT}:${GOBEL_PROMETHEUS_CONTAINER_PORT}
+  #   command:
+  #     - /bin/sh
+  #     - -c
+  #     - |
+  #       envsubst < /template/prometheus.yml.template > /etc/prometheus/prometheus.yml
+  #       /bin/prometheus \
+  #       --config.file=/etc/prometheus/prometheus.yml \
+  #       --storage.tsdb.path=/prometheus
+  #   networks: 
+  #     - gobel_link
+  #   restart: always
+  # node-exporter:
+  #   container_name: "${GOBEL_NODE_EXPORTER_CONTAINER_NAME}"
+  #   environment: 
+  #     - GOBEL_NODE_EXPORTER_IMAGE_NAME=${GOBEL_NODE_EXPORTER_IMAGE_NAME}
+  #     - GOBEL_NODE_EXPORTER_IMAGE_TAG=${GOBEL_NODE_EXPORTER_IMAGE_TAG}
+  #   build:
+  #     context: "./node-exporter"
+  #     dockerfile: "Dockerfile"
+  #     args:
+  #       GOBEL_NODE_EXPORTER_IMAGE_NAME: "${GOBEL_NODE_EXPORTER_IMAGE_NAME}"
+  #       GOBEL_NODE_EXPORTER_IMAGE_TAG: "${GOBEL_NODE_EXPORTER_IMAGE_TAG}"
+  #   volumes:
+  #     - /proc:/host/proc
+  #     - /sys:/host/sys
+  #     - /:/rootfs
+  #   ports:
+  #     - ${GOBEL_NODE_EXPORTER_HOST_PORT}:${GOBEL_NODE_EXPORTER_CONTAINER_PORT}
+  #   command: 
+  #     - --path.procfs=/host/proc
+  #     - --path.sysfs=/host/sys
+  #     - --collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)
+  #   networks: 
+  #     - gobel_link
+  #   restart: always
+  # mysqld-exporter:
+  #   container_name: "${GOBEL_MYSQLD_EXPORTER_CONTAINER_NAME}"
+  #   environment: 
+  #     - DATA_SOURCE_NAME=root:${GOBEL_MYSQL_ROOT_PASSWORD}@(${GOBEL_MYSQL_CONTAINER_NAME:${GOBEL_MYSQL_CONTAINER_PORT})
+  #   build:
+  #     context: "./mysqld-exporter"
+  #     dockerfile: "Dockerfile"
+  #     args:
+  #       GOBEL_MYSQLD_EXPORTER_IMAGE_NAME: "${GOBEL_MYSQLD_EXPORTER_IMAGE_NAME}"
+  #       GOBEL_MYSQLD_EXPORTER_IMAGE_TAG: "${GOBEL_MYSQLD_EXPORTER_IMAGE_TAG}"
+  #   ports:
+  #     - ${GOBEL_MYSQLD_EXPORTER_HOST_PORT}:${GOBEL_MYSQLD_EXPORTER_CONTAINER_PORT}
+  #   command: 
+  #     - --collect.global_status
+  #     - --collect.global_variables
+  #     - --collect.slave_status
+  #     - --collect.binlog_size
+  #     - --collect.info_schema.processlist
+  #     - --collect.info_schema.userstats
+  #     - --collect.info_schema.tables
+  #     - --collect.auto_increment.columns
+  #     - --collect.info_schema.tablestats
+  #     - --collect.perf_schema.file_events
+  #     - --collect.perf_schema.eventsstatements
+  #     - --collect.perf_schema.indexiowaits
+  #     - --collect.perf_schema.tableiowaits
+  #     - --collect.perf_schema.tablelocks
+  #     - --collect.perf_schema.eventswaits
+  #   networks: 
+  #     - gobel_link
+  #   restart: always
+  # grafana:
+  #   container_name: "${GOBEL_GRAFANA_CONTAINER_NAME}"
+  #   environment: 
+  #     - GF_SECURITY_ADMIN_USER=${GOBEL_GF_SECURITY_ADMIN_USER}
+  #     - GF_SECURITY_ADMIN_PASSWORD=${GOBEL_GF_SECURITY_ADMIN_PASSWORD}
+  #     - GF_USERS_ALLOW_SIGN_UP="${GOBEL_GF_USERS_ALLOW_SIGN_UP}"
+  #     - GF_USERS_ALLOW_ORG_CREATE="${GOBEL_GF_USERS_ALLOW_ORG_CREATE}"
+  #     - DS_PROMETHEUS=${GOBEL_DS_PROMETHEUS}
+  #   build:
+  #     context: "./grafana"
+  #     dockerfile: "Dockerfile"
+  #     args:
+  #       GOBEL_GRAFANA_IMAGE_NAME: "${GOBEL_GRAFANA_IMAGE_NAME}"
+  #       GOBEL_GRAFANA_IMAGE_TAG: "${GOBEL_GRAFANA_IMAGE_TAG}"
+  #   volumes: 
+  #     - ./grafana/provisioning:/etc/grafana/provisioning
+  #   ports:
+  #     - ${GOBEL_GRAFANA_HOST_PORT}:${GOBEL_GRAFANA_CONTAINER_PORT}
+  #   networks: 
+  #     - gobel_link
+  #   restart: always
+  # # # NOTE: This does not work on m1 Mac.
+  # # # cf. https://github.com/google/cadvisor/issues/2763
+  # cadvisor:
+  #   container_name: "${GOBEL_CADVISOR_CONTAINER_NAME}"
+  #   build:
+  #     context: "./cadvisor"
+  #     dockerfile: "Dockerfile"
+  #     args:
+  #       GOBEL_CADVISOR_IMAGE_NAME: "${GOBEL_CADVISOR_IMAGE_NAME}"
+  #       GOBEL_CADVISOR_IMAGE_TAG: "${GOBEL_CADVISOR_IMAGE_TAG}"
+  #   volumes:
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:rw
+  #     - /sys:/sys:ro
+  #     - /var/lib/docker:/var/lib/docker:ro
+  #   privileged: true
+  #   ports:
+  #     - ${GOBEL_CADVISOR_HOST_PORT}:${GOBEL_CADVISOR_CONTAINER_PORT}
+  #   command:
+  #     - '-port=${GOBEL_CADVISOR_CONTAINER_PORT}'
+  #   networks: 
+  #     - gobel_link
+  #   restart: always
   elasticsearch:  
     container_name: "${GOBEL_ELASTICSEARCH_CONTAINER_NAME}"
     environment: 
@@ -333,44 +335,6 @@ services:
     networks: 
       - gobel_link
     restart: always
-  fluentd:
-    container_name: "${GOBEL_FLUENTD_CONTAINER_NAME}"
-    build:
-      context: "./fluentd"
-      dockerfile: "Dockerfile"
-      args:
-        GOBEL_FLUENTD_IMAGE_NAME: "${GOBEL_FLUENTD_IMAGE_NAME}"
-        GOBEL_FLUENTD_IMAGE_TAG: "${GOBEL_FLUENTD_IMAGE_TAG}"
-    environment: 
-      # TODO: confにenvが反映されない
-      - GOBEL_ELASTICSEARCH_CONTAINER_PORT=${GOBEL_ELASTICSEARCH_CONTAINER_PORT}
-      - GOBEL_FLUENTD_CONTAINER_PORT=${GOBEL_FLUENTD_CONTAINER_PORT}
-      - GOBEL_ELASTICSEARCH_ELASTIC_USERNAME=${GOBEL_ELASTICSEARCH_ELASTIC_USERNAME}
-      - GOBEL_ELASICSEARCH_ELASTIC_PASSWORD=${GOBEL_ELASTICSEARCH_ELASTIC_PASSWORD}
-      - GOBEL_FLUENTD_LOGSTASH_PREFIX_NGINX_ACCESS_LOG=${GOBEL_FLUENTD_LOGSTASH_PREFIX_NGINX_ACCESS_LOG}
-      - GOBEL_FLUENTD_TYPE_NAME_NGINX_ACCESS_LOG=${GOBEL_FLUENTD_TYPE_NAME_NGINX_ACCESS_LOG}
-      - GOBEL_FLUENTD_LOGSTASH_PREFIX_NGINX_ERROR_LOG=${GOBEL_FLUENTD_LOGSTASH_PREFIX_NGINX_ERROR_LOG}
-      - GOBEL_FLUENTD_TYPE_NAME_NGINX_ERROR_LOG=${GOBEL_FLUENTD_TYPE_NAME_NGINX_ERROR_LOG}
-      - GOBEL_FLUENTD_LOGSTASH_PREFIX_GOBEL_API=${GOBEL_FLUENTD_LOGSTASH_PREFIX_GOBEL_API}
-      - GOBEL_FLUENTD_TYPE_NAME_GOBEL_API=${GOBEL_FLUENTD_TYPE_NAME_GOBEL_API}
-      - GOBEL_FLUENTD_LOGSTASH_PREFIX_GOBEL_CLIENT=${GOBEL_FLUENTD_LOGSTASH_PREFIX_GOBEL_CLIENT}
-      - GOBEL_FLUENTD_TYPE_NAME_GOBEL_CLIENT=${GOBEL_FLUENTD_TYPE_NAME_GOBEL_CLIENT}
-      - GOBEL_FLUENTD_LOGSTASH_PREFIX_MYSQL_SLOW=${GOBEL_FLUENTD_LOGSTASH_PREFIX_MYSQL_SLOW}
-      - GOBEL_FLUENTD_TYPE_NAME_MYSQL_SLOW=${GOBEL_FLUENTD_TYPE_NAME_MYSQL_SLOW}
-    volumes:
-      - ./fluentd/config:/fluentd/etc
-      - ./mysql/log:/var/log/mysql
-    user: 1000:1000
-    links:
-      - "elasticsearch"
-    ports:
-      - ${GOBEL_FLUENTD_HOST_PORT}:${GOBEL_FLUENTD_CONTAINER_PORT}
-      - ${GOBEL_FLUENTD_HOST_PORT}:${GOBEL_FLUENTD_CONTAINER_PORT}/udp
-    networks: 
-      - gobel_link
-    restart: always
-    depends_on:
-      - elasticsearch
   kibana:
     container_name: "${GOBEL_KIBANA_CONTAINER_NAME}"
     environment: 
@@ -396,6 +360,23 @@ services:
     restart: always
     depends_on:
       - elasticsearch
+  logstash:
+      container_name: "${GOBEL_LOGSTASH_CONTAINER_NAME}"
+      volumes: 
+          - ./logstash/config:/etc/logstash
+      build:
+        context: "./logstash"
+        dockerfile: "Dockerfile"
+        args:
+          GOBEL_LOGSTASH_IMAGE_NAME: "${GOBEL_LOGSTASH_IMAGE_NAME}"
+          GOBEL_LOGSTASH_IMAGE_TAG: "${GOBEL_LOGSTASH_IMAGE_TAG}"
+      command: logstash -f /etc/logstash/logstash.conf
+      links: 
+        - elasticsearch
+      ports:
+        - ${GOBEL_LOGSTASH_HOST_PORT}:${GOBEL_LOGSTASH_HOST_PORT}/udp
+      networks: 
+        - gobel_link
 networks:
   gobel_link:
     external: true

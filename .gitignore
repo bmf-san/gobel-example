@@ -4,15 +4,15 @@
 .env
 
 # docker-compose
-elasticsearch/nodes
+elasticsearch/nodes/
 
-mysql/data
+mysql/data/
 !/mysql/data/.gitkeep
 
-redis/data
+redis/data/
 !/redis/data/.gitkeep
 
-redis-insight/data
+redis-insight/data/
 !redis-insight/data/.gitkeep
 
 # editor
