@@ -12,8 +12,6 @@ Both local environment and production environment are assumed to be operated wit
 - [gobel-example](https://github.com/bmf-san/gobel-example)
 - [gobel-ops-example](https://github.com/bmf-san/gobel-ops-example)
 
-// TODO: localとproductionがわかりやすいようにかく
-
 # Get started
 ## Docker Compose
 Work in `./docker-compose` directory.
@@ -21,36 +19,22 @@ Work in `./docker-compose` directory.
 ### Create a network
 `make docker-create-network`
 
-### Edit files
-#### environtment files
-Copy each .env_example under the following directory and edit it as needed.
+### Copya and edit an .env
+If you want to check the operation, just copy .env.example.
+Of course, if you want to operate in a production environment, change the settings.
 
-#### config files
-##### fluent.conf
-`fluentd/config/fluent.conf`
-
-```
-    user elastic // here
-    password password // here
+```sh
+cp .env.example .env
 ```
 
-##### kibana.yml
-`kibana/config/kibana.yml`
+### Edit a /etc/hosts if you run containers on local
+There are three host names.
 
 ```
-server.name: kibana
-server.host: "0"
-elasticsearch.hosts: [ "http://elasticsearch:9200" ]
-xpack.monitoring.ui.container.elasticsearch.enabled: true
-elasticsearch.username: admin // here
-elasticsearch.password: password // here
-```
-
-### Edit a /etc/hosts.
-```
-127.0.0.1 gobel-api.local
-127.0.0.1 gobel-client-example.local
-127.0.0.1 gobel-admin-client-example.local
+ex.
+127.0.0.1 SERVER_NAME_OF_API          # use GOBEL_NGINX_API_SERVER_NAME in .env
+127.0.0.1 SERVER_NAME_OF_CLIENT       # use GOBEL_NGINX_CLIENT_SERVER_NAME in .env
+127.0.0.1 SERVER_NAME_OF_ADMIN_CLIENT # use GOBEL_NGINX_ADMIN_CLIENT_SERVER_NAME .env
 ```
 
 ### Build containers
@@ -69,28 +53,23 @@ or
 make docker-compose-up-d
 ```
 
+# Faker
+[Here](https://github.com/bmf-san/gobel-api/blob/master/doc/faker.sql) is a fake data sql file that can be used for operation verification.
+
 ## Go to applications
-|            Application             |                   URL                    |
-| ---------------------------------- | ---------------------------------------- |
-| gobel-api                          | http://gobel-api.local/                  |
-| gobel-admin-client-example-example | http://gobel-admin-client-example.local/ |
-| gobel-client-example               | http://gobel-client-example.local/       |
-| prometheus                         | http://localhost:9090/graph              |
-| node-exporter                      | http://localhost:9100/                   |
-| mysqld-exporter                    | http://localhost:9104/                   |
-| grafana                            | http://localhost:3000/                   |
-| kibana                             | http://0.0.0.0:5601/                     |
+|            Application             |                 URL                 |
+| ---------------------------------- | ----------------------------------- |
+| gobel-api                          | http:/SERVER_NAME_OF_API/           |
+| gobel-admin-client-example-example | http://SERVER_NAME_OF_ADMIN_CLIENT/ |
+| gobel-client-example               | http://SERVER_NAME_OF_CLIENT/       |
+| prometheus                         | http://localhost:9090/graph         |
+| node-exporter                      | http://localhost:9100/              |
+| mysqld-exporter                    | http://localhost:9104/              |
+| grafana                            | http://localhost:3000/              |
+| kibana                             | http://0.0.0.0:5601/                |
 
-// TODO: あとで調整
-# Run in Production
+# Run in production
 See [gobel-ops-example](https://github.com/bmf-san/gobel-ops-example) for building infrastructure construction of the production environment.
-
-# Supplement
-// TODO: 
-- docker secretを使ったほうがよい
-- ダウンタイムについて
-- mysqlを永続化することについて
-
 
 # UI screenshots
 ## gobel-client-example

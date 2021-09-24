@@ -1,0 +1,19 @@
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets:
+        - ${GOBEL_PROMETHEUS_CONTAINER_NAME}:${GOBEL_PROMETHEUS_CONTAINER_PORT}
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets:
+        - ${GOBEL_CADVISOR_CONTAINER_NAME}:${GOBEL_CADVISOR_CONTAINER_PORT}
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets:
+        - ${GOBEL_NODE_EXPORTER_CONTAINER_NAME}:${GOBEL_NODE_EXPORTER_CONTAINER_PORT}
+  - job_name: 'mysqld-exporter'
+    static_configs:
+      - targets:
+        - ${GOBEL_MYSQLD_EXPORTER_CONTAINER_NAME}:${GOBEL_MYSQLD_EXPORTER_CONTAINER_PORT}
+
