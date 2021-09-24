@@ -1,6 +1,6 @@
 # TODO: need like dockerize
 # TODO: volume short syntax to long
-version: '3.2'
+version: '3.9'
 services:
   mysql:
     container_name: "${GOBEL_MYSQL_CONTAINER_NAME}"
@@ -26,7 +26,14 @@ services:
       - gobel_link
     restart: always
     depends_on:
-      - fluentd
+      fluentd:
+        condition: service_started
+    healthcheck:
+      # NOTE: Access authority is not considered because it is only necessary to check the startup. There is also a reason why you should avoid executing login information in a shell because it is insecure.
+      test: mysqladmin ping -h 127.0.0.1
+      interval: 30s
+      timeout: 10s
+      retries: 50
   redis:
     container_name: "${GOBEL_REDIS_CONTAINER_NAME}"
     environment: 
@@ -51,7 +58,13 @@ services:
         fluentd-async-connect: "true"
         tag: "${GOBEL_REDIS_LOGGING_TAG}"
     depends_on:
-      - fluentd
+      fluentd:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 50
   redis-insight:
     container_name: "${GOBEL_REDIS_INSIGHT_CONTAINER_NAME}"
     build:
@@ -68,7 +81,8 @@ services:
       - gobel_link
     restart: always
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
   nginx:
     container_name: "${GOBEL_NGINX_CONTAINER_NAME}"
     environment: 
@@ -116,7 +130,10 @@ services:
         fluentd-async-connect: "true"
         tag: "${GOBEL_NGINX_LOGGING_TAG}"
     depends_on:
-      - fluentd
+      gobel-api:
+        condition: service_healthy
+      fluentd:
+        condition: service_started
   gobel-api:
     container_name: "${GOBEL_API_CONTAINER_NAME}"
     environment: 
@@ -154,11 +171,16 @@ services:
         fluentd-async-connect: "true"
         tag: "${GOBEL_API_LOGGING_TAG}"
     depends_on:
-      - nginx
-      - mysql
-      - fluentd
+      mysql:
+        condition: service_healthy
+      fluentd:
+        condition: service_started
+    healthcheck:
+      test: curl -s http://localhost:${GOBEL_API_CONTAINER_PORT}/healthcheck >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 50
   gobel-client-example:
-    # TODO: api callできないぽい？？なんか通信不安定
     container_name: "${GOBEL_CLIENT_CONTAINER_NAME}"
     environment: 
       - SERVER_PORT=${GOBEL_CLIENT_CONTAINER_PORT}
@@ -185,9 +207,10 @@ services:
         fluentd-async-connect: "true"
         tag: "${GOBEL_CLIENT_LOGGING_TAG}"
     depends_on:
-      - nginx
-      - mysql
-      - fluentd
+      fluentd:
+        condition: service_started
+      gobel-api:
+        condition: service_healthy
   prometheus:
     container_name: "${GOBEL_PROMETHEUS_CONTAINER_NAME}"
     environment: 
@@ -277,6 +300,9 @@ services:
     networks: 
       - gobel_link
     restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
   grafana:
     container_name: "${GOBEL_GRAFANA_CONTAINER_NAME}"
     environment: 
@@ -298,8 +324,8 @@ services:
     networks: 
       - gobel_link
     restart: always
-  # # NOTE: This does not work on m1 Mac.
-  # # cf. https://github.com/google/cadvisor/issues/2763
+  # NOTE: This does not work on m1 Mac.
+  # cf. https://github.com/google/cadvisor/issues/2763
   cadvisor:
     container_name: "${GOBEL_CADVISOR_CONTAINER_NAME}"
     build:
@@ -341,6 +367,11 @@ services:
     networks: 
       - gobel_link
     restart: always
+    healthcheck:
+      test: curl -s http://localhost:9200 >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 50
   fluentd:
     container_name: "${GOBEL_FLUENTD_CONTAINER_NAME}"
     build:
@@ -386,7 +417,10 @@ services:
       - gobel_link
     restart: always
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      disable: true
   kibana:
     container_name: "${GOBEL_KIBANA_CONTAINER_NAME}"
     environment: 
@@ -411,7 +445,8 @@ services:
       - gobel_link
     restart: always
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
 networks:
   gobel_link:
     external: true

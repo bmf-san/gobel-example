@@ -47,12 +47,6 @@ make docker-compose-build
 make docker-compose-up
 ```
 
-or
-
-```sh
-make docker-compose-up-d
-```
-
 # Faker
 [Here](https://github.com/bmf-san/gobel-api/blob/master/doc/faker.sql) is a fake data sql file that can be used for operation verification.
 
@@ -121,12 +115,15 @@ Visualization of logs in cooperation with elasticsearch and fluentd.
 
 - Application log
   - gobel-api-*
-  - gobel-clientexample-*
+  - gobel-client-*
 - DB log
   - mysql-slow-*
 - Web server log
   - nginx-access-*
   - nginx-error-*
+
+The index name above is an example.
+See [fluent.conf](https://github.com/bmf-san/gobel-example/blob/master/fluentd/config/fluent.conf) for details.
 
 <img src="https://user-images.githubusercontent.com/13291041/121403338-c22d7080-c995-11eb-82b7-b9470a0f192a.png" alt="drawing" width="400"/>
 
