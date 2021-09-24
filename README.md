@@ -19,18 +19,22 @@ Work in `./docker-compose` directory.
 ### Create a network
 `make docker-create-network`
 
-// TODO: 
-### Env
+### Copya and edit an .env
+If you want to check the operation, just copy .env.example.
+Of course, if you want to operate in a production environment, change the settings.
+
 ```sh
 cp .env.example .env
 ```
 
-// TODO: In local env, you don't need these settings.
-### Edit a /etc/hosts.
+### Edit a /etc/hosts if you run containers on local
+There are three host names.
+
 ```
-127.0.0.1 api.gobel.tk
-127.0.0.1 gobel.tk
-127.0.0.1 admin.gobel.tk
+ex.
+127.0.0.1 SERVER_NAME_OF_API          # use GOBEL_NGINX_API_SERVER_NAME in .env
+127.0.0.1 SERVER_NAME_OF_CLIENT       # use GOBEL_NGINX_CLIENT_SERVER_NAME in .env
+127.0.0.1 SERVER_NAME_OF_ADMIN_CLIENT # use GOBEL_NGINX_ADMIN_CLIENT_SERVER_NAME .env
 ```
 
 ### Build containers
@@ -49,30 +53,23 @@ or
 make docker-compose-up-d
 ```
 
-## Go to applications
-|            Application             |                   URL                    |
-| ---------------------------------- | ---------------------------------------- |
-| gobel-api                          | http://gobel-api.local/                  |
-| gobel-admin-client-example-example | http://gobel-admin-client-example.local/ |
-| gobel-client-example               | http://gobel-client-example.local/       |
-| prometheus                         | http://localhost:9090/graph              |
-| node-exporter                      | http://localhost:9100/                   |
-| mysqld-exporter                    | http://localhost:9104/                   |
-| grafana                            | http://localhost:3000/                   |
-| kibana                             | http://0.0.0.0:5601/                     |
-
-// TODO: Fix later
-# Run in Production
-See [gobel-ops-example](https://github.com/bmf-san/gobel-ops-example) for building infrastructure construction of the production environment.
-
 # Faker
-// TODO: Fix later
+[Here](https://github.com/bmf-san/gobel-api/blob/master/doc/faker.sql) is a fake data sql file that can be used for operation verification.
 
-# Supplement
-// TODO: Fix later
-- user docker secret is better maybe
-- about donwtime for building container
-- about mysql data volume persistence
+## Go to applications
+|            Application             |                 URL                 |
+| ---------------------------------- | ----------------------------------- |
+| gobel-api                          | http:/SERVER_NAME_OF_API/           |
+| gobel-admin-client-example-example | http://SERVER_NAME_OF_ADMIN_CLIENT/ |
+| gobel-client-example               | http://SERVER_NAME_OF_CLIENT/       |
+| prometheus                         | http://localhost:9090/graph         |
+| node-exporter                      | http://localhost:9100/              |
+| mysqld-exporter                    | http://localhost:9104/              |
+| grafana                            | http://localhost:3000/              |
+| kibana                             | http://0.0.0.0:5601/                |
+
+# Run in production
+See [gobel-ops-example](https://github.com/bmf-san/gobel-ops-example) for building infrastructure construction of the production environment.
 
 # UI screenshots
 ## gobel-client-example

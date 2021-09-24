@@ -5,6 +5,7 @@
 
 # docker-compose
 elasticsearch/nodes
+!/elasticsearch/nodes/.gitkeep
 
 mysql/data
 !/mysql/data/.gitkeep

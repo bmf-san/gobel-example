@@ -2,7 +2,3 @@ ARG GOBEL_MYSQL_IMAGE_NAME=${GOBEL_MYSQL_IMAGE_NAME}
 ARG GOBEL_MYSQL_IMAGE_TAG=${GOBEL_MYSQL_IMAGE_TAG}
 
 FROM --platform=linux/amd64 ${GOBEL_MYSQL_IMAGE_NAME}:${GOBEL_MYSQL_IMAGE_TAG}
-
-# TODO: doesn't need
-# RUN mkdir /var/log/mysql \
-# 	&& chmod 777 /var/log/mysql
