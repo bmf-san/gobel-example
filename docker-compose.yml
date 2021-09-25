@@ -1,4 +1,3 @@
-# TODO: need like dockerize
 # TODO: volume short syntax to long
 version: '3.9'
 services:
