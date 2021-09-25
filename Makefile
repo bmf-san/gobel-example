@@ -18,3 +18,6 @@ docker-compose-build: ## Build containers by docker compose.
 .PHONY: docker-compose-up
 docker-compose-up: ## Run containers by docker-compose.
 	@$(up)
+
+docker-inspect-healthcheck: ## Inspect healthcheck of container. ex. make docker-inspect-healthcheck NAME=container-name
+	docker inspect --format "{{json .State.Health }}" ${NAME} | jq
