@@ -10,6 +10,7 @@ services:
         context: "./mysql"
         dockerfile: "Dockerfile"
         args:
+          PLATFORM: "${PLATFORM}"
           GOBEL_MYSQL_IMAGE_NAME: "${GOBEL_MYSQL_IMAGE_NAME}"
           GOBEL_MYSQL_IMAGE_TAG: "${GOBEL_MYSQL_IMAGE_TAG}"
     ports:
@@ -41,6 +42,7 @@ services:
         context: "./redis"
         dockerfile: "Dockerfile"
         args:
+          PLATFORM: "${PLATFORM}"
           GOBEL_REDIS_IMAGE_NAME: "${GOBEL_REDIS_IMAGE_NAME}"
           GOBEL_REDIS_IMAGE_TAG: "${GOBEL_REDIS_IMAGE_TAG}"
     ports:
@@ -70,6 +72,7 @@ services:
         context: "./redis-insight"
         dockerfile: "Dockerfile"
         args:
+          PLATFORM: "${PLATFORM}"
           GOBEL_REDIS_INSIGHT_IMAGE_NAME: "${GOBEL_REDIS_INSIGHT_IMAGE_NAME}"
           GOBEL_REDIS_INSIGHT_IMAGE_TAG: "${GOBEL_REDIS_INSIGHT_IMAGE_TAG}"
     ports:
@@ -103,6 +106,7 @@ services:
         context: "./nginx"
         dockerfile: "Dockerfile"
         args:
+          PLATFORM: "${PLATFORM}"
           VUE_APP_API_ENDPOINT: "${GOBEL_API_HTTP_API_SCHEME}://${GOBEL_NGINX_API_SERVER_NAME}"
           GOBEL_NGINX_IMAGE_NAME: "${GOBEL_NGINX_IMAGE_NAME}"
           GOBEL_NGINX_IMAGE_TAG: "${GOBEL_NGINX_IMAGE_TAG}"
@@ -156,6 +160,7 @@ services:
       context: "./gobel-api"
       dockerfile: "Dockerfile"
       args:
+        PLATFORM: "${PLATFORM}"
         GOBEL_API_IMAGE_NAME: "${GOBEL_API_IMAGE_NAME}"
         GOBEL_API_IMAGE_TAG: "${GOBEL_API_IMAGE_TAG}"
     ports:
@@ -192,6 +197,7 @@ services:
       context: "./gobel-client-example"
       dockerfile: "Dockerfile"
       args:
+        PLATFORM: "${PLATFORM}"
         GOBEL_CLIENT_IMAGE_NAME: "${GOBEL_CLIENT_IMAGE_NAME}"
         GOBEL_CLIENT_IMAGE_TAG: "${GOBEL_CLIENT_IMAGE_TAG}"
     ports:
@@ -227,6 +233,7 @@ services:
       context: "./prometheus"
       dockerfile: "Dockerfile"
       args:
+        PLATFORM: "${PLATFORM}"
         GOBEL_PROMETHEUS_IMAGE_NAME: "${GOBEL_PROMETHEUS_IMAGE_NAME}"
         GOBEL_PROMETHEUS_IMAGE_TAG: "${GOBEL_PROMETHEUS_IMAGE_TAG}"
         GOBEL_ALPINE_IMAGE_NAME: "${GOBEL_ALPINE_IMAGE_NAME}"
@@ -253,6 +260,7 @@ services:
       context: "./node-exporter"
       dockerfile: "Dockerfile"
       args:
+        PLATFORM: "${PLATFORM}"
         GOBEL_NODE_EXPORTER_IMAGE_NAME: "${GOBEL_NODE_EXPORTER_IMAGE_NAME}"
         GOBEL_NODE_EXPORTER_IMAGE_TAG: "${GOBEL_NODE_EXPORTER_IMAGE_TAG}"
     volumes:
@@ -276,6 +284,7 @@ services:
       context: "./mysqld-exporter"
       dockerfile: "Dockerfile"
       args:
+        PLATFORM: "${PLATFORM}"
         GOBEL_MYSQLD_EXPORTER_IMAGE_NAME: "${GOBEL_MYSQLD_EXPORTER_IMAGE_NAME}"
         GOBEL_MYSQLD_EXPORTER_IMAGE_TAG: "${GOBEL_MYSQLD_EXPORTER_IMAGE_TAG}"
     ports:
@@ -314,6 +323,7 @@ services:
       context: "./grafana"
       dockerfile: "Dockerfile"
       args:
+        PLATFORM: "${PLATFORM}"
         GOBEL_GRAFANA_IMAGE_NAME: "${GOBEL_GRAFANA_IMAGE_NAME}"
         GOBEL_GRAFANA_IMAGE_TAG: "${GOBEL_GRAFANA_IMAGE_TAG}"
     volumes: 
@@ -331,6 +341,7 @@ services:
       context: "./cadvisor"
       dockerfile: "Dockerfile"
       args:
+        PLATFORM: "${PLATFORM}"
         GOBEL_CADVISOR_IMAGE_NAME: "${GOBEL_CADVISOR_IMAGE_NAME}"
         GOBEL_CADVISOR_IMAGE_TAG: "${GOBEL_CADVISOR_IMAGE_TAG}"
     volumes:
@@ -377,6 +388,7 @@ services:
       context: "./fluentd"
       dockerfile: "Dockerfile"
       args:
+        PLATFORM: "${PLATFORM}"
         GOBEL_FLUENTD_IMAGE_NAME: "${GOBEL_FLUENTD_IMAGE_NAME}"
         GOBEL_FLUENTD_IMAGE_TAG: "${GOBEL_FLUENTD_IMAGE_TAG}"
     environment: 
@@ -436,6 +448,7 @@ services:
       context: "./kibana"
       dockerfile: "Dockerfile"
       args:
+        PLATFORM: "${PLATFORM}"
         GOBEL_KIBANA_IMAGE_NAME: "${GOBEL_KIBANA_IMAGE_NAME}"
         GOBEL_KIBANA_IMAGE_TAG: "${GOBEL_KIBANA_IMAGE_TAG}"
     ports:
