@@ -7,8 +7,8 @@ Both local environment and production environment are assumed to be operated wit
 
 # gobel
 - [gobel-api](https://github.com/bmf-san/gobel-api)
-- [gobel-client-example-example](https://github.com/bmf-san/gobel-client-example-example)
-- [gobel-admin-client-example-example](https://github.com/bmf-san/gobel-admin-client-example-example)
+- [gobel-client-example](https://github.com/bmf-san/gobel-client-example)
+- [gobel-admin-client-example](https://github.com/bmf-san/gobel-admin-client-example)
 - [gobel-example](https://github.com/bmf-san/gobel-example)
 - [gobel-ops-example](https://github.com/bmf-san/gobel-ops-example)
 

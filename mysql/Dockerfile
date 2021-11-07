@@ -3,3 +3,6 @@ ARG GOBEL_MYSQL_IMAGE_TAG=${GOBEL_MYSQL_IMAGE_TAG}
 ARG PLATFORM=${PLATFORM}
 
 FROM --platform=${PLATFORM} ${GOBEL_MYSQL_IMAGE_NAME}:${GOBEL_MYSQL_IMAGE_TAG}
+
+RUN mkdir /var/log/mysql \
+	&& chown mysql:mysql /var/log/mysql \
