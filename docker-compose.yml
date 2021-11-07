@@ -17,11 +17,10 @@ services:
       - "${GOBEL_MYSQL_HOST_PORT}:${GOBEL_MYSQL_CONTAINER_PORT}"
     volumes:
       - ./mysql/config/my.cnf:/etc/mysql/conf.d/my.cnf
-      - ./mysql/data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
       # NOTE: For fluentd
-      - ./mysql/log:/var/log/mysql
+      - mysql-log:/var/log/mysql
       - ./mysql/initdb.d:/docker-entrypoint-initdb.d
-    user: 1000:1000
     networks:
       - gobel_link
     restart: always
@@ -417,8 +416,8 @@ services:
       - GOBEL_FLUENTD_TYPE_NAME_MYSQL_SLOW=${GOBEL_FLUENTD_TYPE_NAME_MYSQL_SLOW}
     volumes:
       - ./fluentd/config:/fluentd/etc
-      - ./mysql/log:/var/log/mysql
-    user: 1000:1000
+      - mysql-log:/var/log/mysql
+    user: root
     links:
       - "elasticsearch"
     ports:
@@ -462,3 +461,6 @@ services:
 networks:
   gobel_link:
     external: true
+volumes:
+  mysql-data:
+  mysql-log:
