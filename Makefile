@@ -5,7 +5,7 @@ help:
 .DEFAULT_GOAL := help
 
 build=docker-compose --env-file=.env build --no-cache
-up=docker-compose --env-file=.env up -d --no-deps
+up=docker-compose --env-file=.env up -d
 
 .PHONY: docker-create-network
 docker-create-network: ## Create a network for docker.
