@@ -4,6 +4,25 @@ server {
     charset UTF-8;
     access_log  /var/log/nginx/${GOBEL_NGINX_CLIENT_ACCESS_LOG_NAME}.log  ltsv;
     error_log   /var/log/nginx/${GOBEL_NGINX_CLIENT_ERROR_LOG_NAME}.log;
+
+    location / {
+        return 301 https://$server_name$request_uri;
+    }
+}
+
+server {
+    listen       ${GOBEL_NGINX_HOST_SSL_PORT} ssl http2;
+    server_name  ${GOBEL_NGINX_CLIENT_SERVER_NAME};
+    charset UTF-8;
+    access_log  /var/log/nginx/${GOBEL_NGINX_CLIENT_ACCESS_LOG_NAME}.log  ltsv;
+    error_log   /var/log/nginx/${GOBEL_NGINX_CLIENT_ERROR_LOG_NAME}.log;
+	# TODO: ssl pathは変数にしたい
+    ssl_certificate /etc/letsencrypt/live/${GOBEL_NGINX_ADMIN_CLIENT_SERVER_NAME}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${GOBEL_NGINX_ADMIN_CLIENT_SERVER_NAME}/privkey.pem;
+    ssl_session_timeout 5m;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv3:+EXP;
+    ssl_prefer_server_ciphers on;
     
     location / {
         proxy_http_version 1.1;

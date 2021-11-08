@@ -88,6 +88,7 @@ services:
     container_name: "${GOBEL_NGINX_CONTAINER_NAME}"
     environment: 
       - GOBEL_NGINX_HOST_PORT=${GOBEL_NGINX_HOST_PORT}
+      - GOBEL_NGINX_HOST_SSL_PORT=${GOBEL_NGINX_HOST_SSL_PORT}
       - GOBEL_NGINX_ADMIN_CLIENT_SERVER_NAME=${GOBEL_NGINX_ADMIN_CLIENT_SERVER_NAME}
       - GOBEL_NGINX_ADMIN_CLIENT_ACCESS_LOG_NAME=${GOBEL_NGINX_ADMIN_CLIENT_ACCESS_LOG_NAME}
       - GOBEL_NGINX_ADMIN_CLIENT_ERROR_LOG_NAME=${GOBEL_NGINX_ADMIN_CLIENT_ERROR_LOG_NAME}
@@ -120,8 +121,10 @@ services:
           GOBEL_NGINX_CLIENT_ERROR_LOG_NAME: ${GOBEL_NGINX_CLIENT_ERROR_LOG_NAME}
     volumes:
       - ./nginx/template:/etc/nginx/templates
+      - ./data/certbot/conf:/etc/letsencrpt
     ports:
       - "${GOBEL_NGINX_HOST_PORT}:${GOBEL_NGINX_CONTAINER_PORT}"
+      - "${GOBEL_NGINX_HOST_SSL_PORT}:${GOBEL_NGINX_CONTAINER_SSL_PORT}"
     networks:
       - gobel_link
     restart: always

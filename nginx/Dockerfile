@@ -4,7 +4,7 @@ ARG GOBEL_NGINX_IMAGE_NAME=${GOBEL_NGINX_IMAGE_NAME}
 ARG GOBEL_NGINX_IMAGE_TAG=${GOBEL_NGINX_IMAGE_TAG}
 ARG PLATFORM=${PLATFORM}
 
-FROM --platform=linux/amd64 ${GOBEL_ADMIN_CLIENT_IMAGE_NAME}:${GOBEL_ADMIN_CLIENT_IMAGE_TAG} as build-stage
+FROM --platform=${PLATFORM} ${GOBEL_ADMIN_CLIENT_IMAGE_NAME}:${GOBEL_ADMIN_CLIENT_IMAGE_TAG} as build-stage
 
 ARG VUE_APP_API_ENDPOINT
 ENV VUE_APP_API_ENDPOINT=${VUE_APP_API_ENDPOINT}
@@ -32,4 +32,4 @@ RUN rm -rf /etc/nginx/conf.d/default.conf \
     && ln -sf /dev/stdout /var/log/nginx/${GOBEL_NGINX_API_ACCESS_LOG_NAME}.log \
     && ln -sf /dev/stderr /var/log/nginx/${GOBEL_NGINX_API_ERROR_LOG_NAME}.log \
     && ln -sf /dev/stdout /var/log/nginx/${GOBEL_NGINX_CLIENT_ACCESS_LOG_NAME}.log \
-    && ln -sf /dev/stderr /var/log/nginx/${GOBEL_NGINX_CLIENT_ERROR_LOG_NAME}.log 
+    && ln -sf /dev/stderr /var/log/nginx/${GOBEL_NGINX_CLIENT_ERROR_LOG_NAME}.log
