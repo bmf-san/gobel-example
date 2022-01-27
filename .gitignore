@@ -13,6 +13,9 @@ mysql/data
 mysql/log
 !/mysql/log/.gitkeep
 
+nginx/certificates
+!/nginx/certificates/.gitkeep
+
 redis/data
 !/redis/data/.gitkeep
 
