@@ -2,6 +2,7 @@
 
 # env file
 .env
+.env.prd
 
 # docker-compose
 elasticsearch/nodes
