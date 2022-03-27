@@ -6,7 +6,8 @@ FROM --platform=${PLATFORM} ${GOBEL_FLUENTD_IMAGE_NAME}:${GOBEL_FLUENTD_IMAGE_TA
 
 USER root
 
-RUN gem install fluent-plugin-elasticsearch \ 
+RUN gem uninstall -I elasticsearch && gem install elasticsearch -v 7.17.0 \
+	gem install fluent-plugin-elasticsearch \ 
     && gem install fluent-plugin-rewrite-tag-filter \
     && gem install fluent-plugin-mysqlslowquery
 
