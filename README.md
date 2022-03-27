@@ -65,6 +65,25 @@ make docker-compose-up
 # Run in production
 See [gobel-ops-example](https://github.com/bmf-san/gobel-ops-example) for building infrastructure construction of the production environment.
 
+# Tips
+Elasticsearch may not start when changing the version related to fluentd.
+In that case, deleting `/elasticsearch/nodes` may solve the problem.
+
+```shell
+gobel-grafana is up-to-date
+Recreating gobel-elasticsearch ... 
+gobel-cadvisor is up-to-date
+gobel-node-exporter is up-to-date
+Recreating gobel-prometheus    ... 
+Recreating gobel-elasticsearch ... done
+Recreating gobel-prometheus    ... done
+ERROR: for kibana  Container "72a9d83b3ef8" is unhealthy.
+ERROR: for fluentd  Container "72a9d83b3ef8" is unhealthy.
+Encountered errors while bringing up the project.
+make: *** [Makefile:20: docker-compose-up] Error 1
+make: *** [deploy] Error 2
+```
+
 # UI screenshots
 ## gobel-client-example
 An example application using gobel-api.
