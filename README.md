@@ -19,7 +19,7 @@ Work in `./docker-compose` directory.
 ### Create a network
 `make docker-create-network`
 
-### Copya and edit an .env
+### Copy a and edit an .env
 If you want to check the operation, just copy .env.example.
 Of course, if you want to operate in a production environment, change the settings.
 
@@ -61,6 +61,7 @@ make docker-compose-up
 | mysqld-exporter                    | http://localhost:9104/              |
 | grafana                            | http://localhost:3000/              |
 | kibana                             | http://0.0.0.0:5601/                |
+| redis-insight                      | http://localhost:8001/              |
 
 # Run in production
 See [gobel-ops-example](https://github.com/bmf-san/gobel-ops-example) for building infrastructure construction of the production environment.
