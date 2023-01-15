@@ -4,12 +4,8 @@ help:
 
 .DEFAULT_GOAL := help
 
-build=docker-compose --env-file=.env build --no-cache
+build=docker-compose --env-file=.env build --no-cache --pull
 up=docker-compose --env-file=.env up -d
-
-.PHONY: docker-create-network
-docker-create-network: ## Create a network for docker.
-	docker network inspect gobel_link >/dev/null 2>&1 || docker network create --driver bridge gobel_link
 
 .PHONY: docker-compose-build
 docker-compose-build: ## Build containers by docker compose.

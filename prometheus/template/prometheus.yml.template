@@ -16,4 +16,43 @@ scrape_configs:
     static_configs:
       - targets:
         - ${GOBEL_MYSQLD_EXPORTER_CONTAINER_NAME}:${GOBEL_MYSQLD_EXPORTER_CONTAINER_PORT}
-
+  - job_name: 'nginx-prometheus-exporter'
+    static_configs:
+      - targets:
+        - ${GOBEL_NGINX_PROMETHEUS_EXPORTER_CONTAINER_NAME}:${GOBEL_NGINX_PROMETHEUS_EXPORTER_CONTAINER_PORT}
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets:
+        - ${GOBEL_REDIS_EXPORTER_CONTAINER_NAME}:${GOBEL_REDIS_EXPORTER_CONTAINER_PORT}
+  - job_name: 'blackbox-exporter'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]  # Look for a HTTP 200 response.
+    static_configs:
+      - targets:
+        - ${GOBEL_BLACKBOX_EXPORTER_TARGET_GOBEL_API}
+        - ${GOBEL_BLACKBOX_EXPORTER_TARGET_GOBEL_ADMIN}
+        - ${GOBEL_BLACKBOX_EXPORTER_TARGET_GOBEL_CLIENT}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: ${GOBEL_BLACKBOX_EXPORTER_CONTAINER_NAME}:${GOBEL_BLACKBOX_EXPORTER_CONTAINER_PORT}
+  - job_name: "ssl-exporter"
+    metrics_path: /probe
+    params:
+      module: ["https"]
+    static_configs:
+      - targets:
+        - ${GOBEL_SSL_EXPORTER_TARGET_GOBEL_API}
+        - ${GOBEL_SSL_EXPORTER_TARGET_GOBEL_ADMIN}
+        - ${GOBEL_SSL_EXPORTER_TARGET_GOBEL_CLIENT}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: ${GOBEL_SSL_EXPORTER_CONTAINER_NAME}:${GOBEL_SSL_EXPORTER_CONTAINER_PORT}
