@@ -23,11 +23,9 @@ ARG GOBEL_NGINX_CLIENT_ERROR_LOG_NAME=${GOBEL_NGINX_CLIENT_ERROR_LOG_NAME}
 
 WORKDIR /var/www/html
 COPY --from=build-stage ${GOBEL_ADMIN_CLIENT_PATH_TO_DIST} ./
-# NOTE: If you want to template nginx.conf, it seems you have to run envsubst yourself 
 COPY ./nginx.conf /etc/nginx/nginx.conf
 
-RUN rm -rf /etc/nginx/conf.d/default.conf \
-    && ln -sf /dev/stdout /var/log/nginx/${GOBEL_NGINX_ADMIN_CLIENT_ACCESS_LOG_NAME}.log \
+RUN ln -sf /dev/stdout /var/log/nginx/${GOBEL_NGINX_ADMIN_CLIENT_ACCESS_LOG_NAME}.log \
     && ln -sf /dev/stderr /var/log/nginx/${GOBEL_NGINX_ADMIN_CLIENT_ERROR_LOG_NAME}.log \
     && ln -sf /dev/stdout /var/log/nginx/${GOBEL_NGINX_API_ACCESS_LOG_NAME}.log \
     && ln -sf /dev/stderr /var/log/nginx/${GOBEL_NGINX_API_ERROR_LOG_NAME}.log \
