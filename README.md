@@ -63,6 +63,7 @@ make docker-compose-up
 | redis-exporter                     | http://localhost:9121/               |
 | blackbox-exporter                  | http://localhost:9115/               |
 | ssl-exporter                       | http://localhost:9219/               |
+| pyroscope                          | http://localhost:4040/               |
 
 # Alert
 Available by setting grafana alert.

@@ -599,6 +599,38 @@ services:
         aliases:
           - ${GOBEL_SSL_EXPORTER_CONTAINER_NAME}
         ipv4_address: 10.10.10.170
+  pyroscope:
+    container_name: "${GOBEL_PYROSCOPE_CONTAINER_NAME}"
+    environment:
+      - GOBEL_API_CONTAINER_NAME=${GOBEL_API_CONTAINER_NAME}
+      - GOBEL_API_CONTAINER_PORT=${GOBEL_API_CONTAINER_PORT}
+      - GOBEL_CLIENT_CONTAINER_NAME=${GOBEL_CLIENT_CONTAINER_NAME}
+      - GOBEL_CLIENT_CONTAINER_PORT=${GOBEL_CLIENT_CONTAINER_PORT}
+      - GOBEL_PYROSCOPE_ADMIN_USER=${GOBEL_PYROSCOPE_ADMIN_USER}
+      - GOBEL_PYROSCOPE_ADMIN_PASSWORD=${GOBEL_PYROSCOPE_ADMIN_PASSWORD}
+    build:
+      context: "./pyroscope"
+      dockerfile: "Dockerfile"
+      args:
+        PLATFORM: "${PLATFORM}"
+        GOBEL_PYROSCOPE_IMAGE_NAME: "${GOBEL_PYROSCOPE_IMAGE_NAME}"
+        GOBEL_PYROSCOPE_IMAGE_TAG: "${GOBEL_PYROSCOPE_IMAGE_TAG}"
+    volumes:
+      - ./pyroscope/server.yml:/etc/pyroscope/server.yml
+    ports:
+      - ${GOBEL_PYROSCOPE_HOST_PORT}:${GOBEL_PYROSCOPE_CONTAINER_PORT}
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      gobel_network:
+        aliases:
+          - ${GOBEL_PYROSCOPE_CONTAINER_NAME}
+        ipv4_address: 10.10.10.180
 networks:
   gobel_network:
     driver: bridge

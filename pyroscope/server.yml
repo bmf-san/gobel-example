@@ -1,0 +1,20 @@
+---
+scrape-configs:
+  - job-name: pyroscope
+    scrape-interval: 60s
+    enabled-profiles: [cpu, mem, goroutines, mutex, block]
+    static-configs:
+      - application: ${GOBEL_API_CONTAINER_NAME}
+        spy-name: gospy
+        targets:
+          - ${GOBEL_API_CONTAINER_NAME}:${GOBEL_API_CONTAINER_PORT}
+      - application: ${GOBEL_CLIENT_CONTAINER_NAME}
+        spy-name: gospy
+        targets:
+          - ${GOBEL_CLIENT_CONTAINER_NAME}:${GOBEL_CLIENT_CONTAINER_PORT}
+auth:
+  internal:
+    admin:
+      name: ${GOBEL_PYROSCOPE_ADMIN_USERNAME}
+      password: ${GOBEL_PYROSCOPE_ADMIN_PASSWORD}
+    enabled: true
