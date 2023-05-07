@@ -1,4 +1,6 @@
 ---
+retention: 336h
+exemplars-retention: 336h
 scrape-configs:
   - job-name: pyroscope
     scrape-interval: 60s
