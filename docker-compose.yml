@@ -159,7 +159,6 @@ services:
     container_name: "${GOBEL_API_CONTAINER_NAME}"
     environment:
       - SERVER_PORT=${GOBEL_API_CONTAINER_PORT}
-      - TIME_ZONE=${GOBEL_API_TIME_ZONE}
       - ALLOW_ORIGIN=${GOBEL_API_ALLOW_ORIGIN}
       - JWT_ACCESS_TOKEN_SECRET=${GOBEL_API_JWT_ACCESS_TOKEN_SECRET}
       - JWT_REFRESH_TOKEN_SECRET=${GOBEL_API_JWT_REFRESH_TOKEN_SECRET}
@@ -172,8 +171,7 @@ services:
       - REDIS_HOST=${GOBEL_REDIS_CONTAINER_NAME}
       - REDIS_PORT=${GOBEL_REDIS_CONTAINER_PORT}
       - REDIS_PASSWORD=${GOBEL_REDIS_PASSWORD}
-      - LOG_THRESHOLD=${GOBEL_API_LOG_THRESHOLD} # NOTE: 0:info 1:warn 2:error 3:fatal
-      - LOG_TIME_ZONE_OFFSET=${GOBEL_API_LOG_TIME_ZONE_OFFSET}
+      - LOG_LEVEL=${GOBEL_API_LOG_LEVEL} # -4: Debug 0: Info 4: Warn 8: Error
     build:
       context: "./gobel-api"
       dockerfile: "Dockerfile"
@@ -207,11 +205,9 @@ services:
     container_name: "${GOBEL_CLIENT_CONTAINER_NAME}"
     environment:
       - SERVER_PORT=${GOBEL_CLIENT_CONTAINER_PORT}
-      - TIME_ZONE=${GOBEL_CLIENT_TIME_ZONE}
       - HTTP_API_SCHEME=http
       - HTTP_API_HOST=${GOBEL_API_CONTAINER_NAME}:${GOBEL_API_CONTAINER_PORT}
-      - LOG_THRESHOLD=${GOBEL_CLIENT_LOG_THRESHOLD} # NOTE: 0:info 1:warn 2:error 3:fatal
-      - LOG_TIME_ZONE_OFFSET=${GOBEL_CLIENT_LOG_TIME_ZONE_OFFSET}
+      - LOG_LEVEL=${GOBEL_CLIENT_LOG_LEVEL} # -4: Debug 0: Info 4: Warn 8: Error
     build:
       context: "./gobel-client"
       dockerfile: "Dockerfile"
