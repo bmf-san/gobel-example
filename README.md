@@ -5,6 +5,7 @@ This repository contains the code to run gobel in each environment.
 
 Both local environment and production environment are assumed to be operated with docker-compose.
 
+- [bmf-tech-client](https://github.com/bmf-san/bmf-tech-client)
 - [gobel-api](https://github.com/bmf-san/gobel-api)
 - [gobel-client-example](https://github.com/bmf-san/gobel-client-example)
 - [gobel-admin-client-example](https://github.com/bmf-san/gobel-admin-client-example)
